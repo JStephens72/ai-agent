@@ -1,0 +1,32 @@
+import os
+
+def get_files_info(working_directory, directory="."):
+    working_dir_abs = os.path.abspath(working_directory)
+    target_dir = os.path.normpath(os.path.join(working_dir_abs, directory))
+    valid_target_dir = os.path.commonpath([working_dir_abs, target_dir]) == working_dir_abs
+
+    if not valid_target_dir:
+        return f'    Error: Cannot list "{directory}" as it is outside the permitted working directory'
+
+    if not os.path.isdir(target_dir):
+        return f'    Error: "{directory}" is not a directory'
+
+    contents = ""
+    try:
+        for item in os.listdir(target_dir):
+            file_info = ""
+            filepath = os.path.join(target_dir, item)
+            is_dir = os.path.isdir(filepath)
+            file_size = os.stat(filepath).st_size
+            file_info = f"  - {item}: file_size={file_size} bytes, is_dir={is_dir}\n"
+            contents += file_info
+    except FileNotFoundError:
+        return f'    Error: "{directory}" is not found.'
+    except NotADirectoryError:
+        return f'    Error: "{directory}" is not a directory.'
+    except PermissionError:
+        return f'    Error: "{directory}" permission error'
+    except:
+        return f"    Error: An unspecified error has occurred."
+    
+    return contents
