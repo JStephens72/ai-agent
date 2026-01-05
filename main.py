@@ -25,7 +25,7 @@ def main():
     my_prompt = args.user_prompt
 
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
-    print(f"My default prompt: {system_prompt}")
+
     response = client.models.generate_content(
         model='gemini-2.5-flash', 
         contents=messages,
@@ -40,8 +40,8 @@ def main():
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
             print(f"\n")
-
-    print(response.text)
+    print("Response:")
+    print(f"{response.text}\nI\'M JUST A ROBOT")
 
 
 if __name__ == "__main__":
