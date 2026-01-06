@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 import argparse
 from prompts import system_prompt
-
+from call_function import available_functions, call_function
 
 def main():
     load_dotenv()
@@ -29,7 +29,9 @@ def main():
     response = client.models.generate_content(
         model='gemini-2.5-flash', 
         contents=messages,
-        config=types.GenerateContentConfig(system_instruction=system_prompt),
+        config=types.GenerateContentConfig(
+            tools=[available_functions],
+            system_instruction=system_prompt),
     )
 
     if args.verbose:
@@ -40,8 +42,27 @@ def main():
             print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
             print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
             print(f"\n")
-    print("Response:")
-    print(f"{response.text}\nI\'M JUST A ROBOT")
+
+    function_results = []
+
+    if response.function_calls:
+        for function_call in response.function_calls:
+            function_call_result = call_function(function_call)
+            if not function_call_result.parts:
+                raise Exception("No parts in function_call_result")
+            
+            first_part = function_call_result.parts[0]
+            if first_part.function_response is None:
+                raise Exception("Missing function_response")
+            
+            if first_part.function_response.response is None:
+                raise Exception("Missing response in function_response")
+            
+            function_results.append(function_call_result.parts[0])
+            if args.verbose:
+                resp = function_call_result.parts[0].function_response.response
+                print(f"-> {resp.get("result")}")
+
 
 
 if __name__ == "__main__":

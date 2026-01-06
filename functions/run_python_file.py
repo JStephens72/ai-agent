@@ -52,15 +52,16 @@ def run_python_file(working_directory, file_path, args=None):
         if result.returncode != 0:
             return_message += f"    Process exited with code {result.returncode}\n"
     
-        if result.stdout == "":
-            return_message += f"    No output produced\n"
-        else:
-            if error := result.stderr == "":
-                error = "<None>"            
-                
-            return_message += f"    STDOUT: {result.stdout}\n    STDERR: {error}\n"
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
 
-        return return_message
+        if not stdout.strip() and not stderr.strip():
+            return "    No output produced"
+        
+        if not stderr.strip():
+            stderr = "<None>"
+
+        return f"    STDOUT: {stdout}\n    STDERR: {stderr}\n"
     
     except Exception as e:
         return f"    Error: executing Python file: {e}"

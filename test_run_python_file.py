@@ -1,4 +1,4 @@
-from run_python_file import *
+from functions.run_python_file import run_python_file
 
 run_cases = [
     ["../calculator","main.py","", "Running calculator with no arguments.\n"],
@@ -9,12 +9,13 @@ run_cases = [
     ["../calculator", "lorem.txt", "", "Running invalid file. This should return an error.\n"],
 ]
 
-for case in run_cases:
-    working_dir = case[0]
-    target_file = case[1]
-    args = case[2]
-    header = case[3]
+#for case in run_cases:
 
-    result = run_python_file(working_dir, target_file, args)
+working_dir = "calculator"
+target_file = "tests.py"
+args = None
+header = "Running calculator test harness.\n"
+
+result = run_python_file(working_dir, target_file, args)
     
-    print(f"{header}{result}")
+print(f"{header}{result}")
